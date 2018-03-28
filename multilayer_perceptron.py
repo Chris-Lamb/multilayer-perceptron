@@ -1,9 +1,69 @@
+import sys
 import numpy as np
 from utils import ACTIVATIONS, DERIVATIVES, LOSSES
-import sys
 
 
 class MLP(object):
+    '''Multilayer perceptron class.
+
+    This module creates a multilayer perceptron classifier.
+
+    Attributes:
+        hidden_layer_sizes (int, ...): Tuple with an arbitrary number of ints
+            indicating the number of nodes in each hidden layer
+        n_layers (int): The number of layers in the network defined as two
+            plus the number of hidden layers.
+        activation (str): String name of non-linear activation function to be
+            applied at each layer. Available activations are 'relu', 'tanh',
+            'sigmoid', and 'swish'
+        batch_size (int): The number of training points to be evaluated in a
+            batch during training. Clipped between 1 and the number of samples
+        shuffle_batches (bool): If True shuffle training data in different
+            batchers each iteration
+        annealing (bool:) If true anneal learning rate each iteration according
+            to the formula eta = eta_0 / (1 + ep / C)
+        annealing_coef (int): Annealing coefficient C used to anneal learning
+            rate if annealing is True
+        learning_rate_init (float): Initial learning rate
+        initial_weights (str): String method of weight initialization. Available
+            initialization methods are 'normal' and 'uniform'. Normal selects
+            initial weights from a gaussian distribution with mean 0 and variance
+            one over the square root of fan in. Uniform selects initial weights
+            uniformly at random between -1.0e-3 and 1.0e-3.
+        momentum (bool): If True optimizer uses momentum
+        alpha (float): Momentum coeffient to be used if momentum is True
+        nesterov_momentum (bool): If true optimizer uses nesterov momentum. If
+            nesterov momentum is used, momentum is not used even if momentum
+            is True.
+        mu (float): Nesterov momentum coefficient to be used if nesterov
+            momentum is True.
+        max_iter (int): Maximum number of training iterations
+        tol (float): If loss fails to improve by at least tol for three
+            consecutive iterations traing is stopped
+        verbose (bool): If True display progress during training
+        early_stopping (bool): If True hold out validation set from traing data
+            and stop training when validation loss fails to improve by at least
+            tol for three consecutive iterations
+        validation_fraction (float): Percentage of training data to be held out
+            as validation set.
+        shuffle_validation (bool): If True validation set is selected at random,
+            otherwise vaildation set is selected from the end of the training data
+        fit_biases (bool): If True add bias to each layer
+        weights (ndarray[float]): Stores weights
+        biases (ndarray[float]): Stores biases
+        delta_weights (ndarray[flaot]): Stores weight gradients
+        delta_biases (ndarray[float]): Stores bias gradients
+        n_outputs (int): Number of distinct outputs
+        n_iter (int): Number of training iterations performed
+        loss_curve (list[float]): List of loss values for each training iteration
+        accuracy_curve (list[float]): List of accuracy values for each training
+            iteration
+        val_loss_curve (list[float]): List of loss values for each training iteration
+            on the validation set. Only computed if early_stopping is True
+        val_accuracy_curve (list[float]): List of accuracy values for each training
+            iteration on the validation set. Only computed if early_stopping is True
+
+    '''
 
     def __init__(self, hidden_layer_sizes=(256, 128),
                  activation='relu',
